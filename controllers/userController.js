@@ -24,9 +24,7 @@ module.exports.createUser = async (req, res, next) => {
 
 module.exports.getUser = async (req, res, next) => {
   try {
-    const {
-      params: { userId },
-    } = req;
+    const { user } = req;
 
     // const users = await User.findAll({
     //   where: {
@@ -36,11 +34,11 @@ module.exports.getUser = async (req, res, next) => {
     // const [user] = users;
 
     // пошук 1 запису по первинному ключу
-    const user = await User.findByPk(userId, {
-      attributes: {
-        exclude: ['password'],
-      },
-    });
+    // const user = await User.findByPk(userId, {
+    //   attributes: {
+    //     exclude: ['password'],
+    //   },
+    // });
 
     // пошук 1 запису якій проходить перевірку
     // const user = await User.findOne({
@@ -52,7 +50,8 @@ module.exports.getUser = async (req, res, next) => {
     //   }
     // });
 
-    res.send({ data: user });
+    const { password, ...safeUser } = user;
+    res.send({ data: safeUser });
   } catch (error) {
     next(error);
   }
@@ -132,10 +131,7 @@ module.exports.getUsers = async (req, res, next) => {
 
 module.exports.updateUser = async (req, res, next) => {
   try {
-    const {
-      body,
-      params: { userId },
-    } = req;
+    const { body, user } = req;
 
     /*
       UPDATE users SET last_name = 'iusdfkhdsfbdsh' WHERE id = 1;
@@ -153,7 +149,7 @@ module.exports.updateUser = async (req, res, next) => {
     // });
 
     // v2 через екземпляр
-    const user = await User.findByPk(userId);
+    // const user = await User.findByPk(userId);
 
     const updatedUser = await user.update(body, {
       returning: true,
@@ -167,22 +163,12 @@ module.exports.updateUser = async (req, res, next) => {
 
 module.exports.deleteUser = async (req, res, next) => {
   try {
-    const {
-      params: { userId },
-    } = req;
+    const { user: deletedUser } = req;
 
     /*
       DELETE FROM users WHERE id = userId;
     */
     // v1 видалення через модель
-    // await User.destroy({
-    //   where: {
-    //     id: userId,
-    //   },
-    // });
-
-    // v2 видалення конкретного екземпляру
-    const deletedUser = await User.findByPk(userId);
 
     if (!deletedUser) {
       throw new Error('User not found');
