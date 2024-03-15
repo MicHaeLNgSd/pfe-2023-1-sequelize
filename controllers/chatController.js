@@ -1,4 +1,5 @@
 const { Chat, User } = require('../models');
+const { createChat } = require('../services/chat.service');
 
 module.exports.createChat = async (req, res, next) => {
   try {
@@ -6,19 +7,7 @@ module.exports.createChat = async (req, res, next) => {
       body: { userId, ...chatData },
     } = req;
 
-    let user;
-    if (userId) {
-      user = await User.findByPk(userId);
-      if (!user) {
-        throw new Error('User not found');
-      }
-    }
-
-    const chat = await Chat.create(chatData);
-
-    if (user) {
-      await chat.addUser(user);
-    }
+    await createChatAndAddUser(userId, chatData);
 
     res.send({ data: chat });
   } catch (error) {
