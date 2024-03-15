@@ -7,20 +7,41 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
-      // define association here
+    static associate({ User }) {
+      Chat.belongsToMany(User, {
+        through: 'users_to_chats',
+        foreignKey: 'chatId',
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
     }
   }
   Chat.init(
     {
-      name: DataTypes.STRING,
-      description: DataTypes.TEXT,
-      imagePath: DataTypes.STRING,
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+          notNull: true,
+        },
+      },
+      description: {
+        type: DataTypes.TEXT,
+        validate: {
+          notEmpty: true,
+        },
+      },
+      imagePath: {
+        type: DataTypes.STRING,
+        field: 'image_path',
+      },
     },
     {
       sequelize,
       modelName: 'Chat',
       tableName: 'chats',
+      underscored: true,
     }
   );
   return Chat;

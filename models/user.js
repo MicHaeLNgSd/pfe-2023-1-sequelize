@@ -9,16 +9,23 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
+    static associate({ Todo, Order, Chat }) {
       // define association here
 
-      User.hasMany(models.Todo, {
+      User.hasMany(Todo, {
         foreignKey: 'userId',
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
 
-      User.hasMany(models.Order, {
+      User.hasMany(Order, {
+        foreignKey: 'userId',
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
+
+      User.belongsToMany(Chat, {
+        through: 'users_to_chats',
         foreignKey: 'userId',
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
