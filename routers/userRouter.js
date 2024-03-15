@@ -1,23 +1,17 @@
 const userRouter = require('express').Router();
 const UserController = require('../controllers/userController');
-const TodoController = require('../controllers/todoController');
-const OrderController = require('../controllers/orderController');
-const paginationMW = require('../middlewares/pagination');
+const pagination = require('../middlewares/paginationMW');
 const { findUser } = require('../middlewares/findUserMW');
+const todoRouter = require('./todoRouter');
+const { orderRouter } = require('./orderRouter');
 
 userRouter.post('/', UserController.createUser);
-userRouter.get('/', paginationMW, UserController.getUsers);
-userRouter.get('/:userId', UserController.getUser);
-userRouter.put('/:userId', UserController.updateUser);
-userRouter.delete('/:userId', UserController.deleteUser);
+userRouter.get('/', pagination, UserController.getUsers);
+userRouter.get('/:userId', findUser, UserController.getUser);
+userRouter.put('/:userId', findUser, UserController.updateUser);
+userRouter.delete('/:userId', findUser, UserController.deleteUser);
 
-userRouter.post('/:userId/todos', TodoController.createTodo);
-userRouter.get('/:userId/todos', TodoController.getTodos);
-userRouter.get('/:userId/todos/:todoId', TodoController.getTodos);
-userRouter.put('/:userId/todos/:todoId', TodoController.updateTodo);
-userRouter.delete('/:userId/todos/:todoId', TodoController.deleteTodo);
-
-userRouter.post('/:userId/orders', OrderController.createOrder);
-userRouter.get('/:userId/orders', paginationMW, OrderController.getOrders);
+userRouter.use('/:userId/todos', findUser, todoRouter);
+userRouter.use('/:userId/orders', orderRouter);
 
 module.exports = userRouter;
